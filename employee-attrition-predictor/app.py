@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -6,9 +7,10 @@ import plotly.express as px
 
 st.set_page_config(page_title="Employee Attrition Predictor", page_icon="👥", layout="wide")
 
-model = joblib.load('notebooks/attrition_model.pkl')
-feature_columns = joblib.load('notebooks/feature_columns.pkl')
-df = pd.read_csv('data/WA_Fn-UseC_-HR-Employee-Attrition.csv')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+model = joblib.load(os.path.join(BASE_DIR, 'notebooks/attrition_model.pkl'))
+feature_columns = joblib.load(os.path.join(BASE_DIR, 'notebooks/feature_columns.pkl'))
+df = pd.read_csv(os.path.join(BASE_DIR, 'data/WA_Fn-UseC_-HR-Employee-Attrition.csv'))
 
 st.title("👥 Employee Attrition Predictor")
 st.markdown("AI-powered HR analytics tool to predict employee attrition using Machine Learning")
@@ -17,7 +19,6 @@ tab1, tab2 = st.tabs(["🔮 Predict Attrition", "📊 Data Insights"])
 
 with tab1:
     st.sidebar.header("Enter Employee Details")
-
     age = st.sidebar.slider("Age", 18, 60, 30)
     monthly_income = st.sidebar.number_input("Monthly Income ($)", 1000, 20000, 5000)
     overtime = st.sidebar.selectbox("Works Overtime?", ["Yes", "No"])
@@ -58,10 +59,10 @@ with tab1:
         probability = model.predict_proba(input_df)[0]
 
         if prediction == 1:
-            st.error(f"⚠️ HIGH RISK — This employee is likely to LEAVE")
+            st.error("⚠️ HIGH RISK — This employee is likely to LEAVE")
             st.metric("Probability of Leaving", f"{probability[1]*100:.1f}%")
         else:
-            st.success(f"✅ LOW RISK — This employee is likely to STAY")
+            st.success("✅ LOW RISK — This employee is likely to STAY")
             st.metric("Probability of Staying", f"{probability[0]*100:.1f}%")
 
         st.divider()
